@@ -1,136 +1,258 @@
-# HCLTech Support — Support Ticket Assistant
+# Solari Analytics Support — Historical Ticket Assistant
 
-## Problem
+An internal workspace that helps support agents find similar past tickets, inspect recorded resolutions, and judge whether those fixes apply to a new issue.
 
-## Running the initial backend
+**Current state:** React frontend and FastAPI backend implemented; Supabase import and database API validation completed. The frontend production build passes. Full browser interaction and visual responsiveness verification remain incomplete. This is a hackathon prototype, not a production support system.
 
-### Database integration
+## 1. Getting started
 
-**Evaluation correction:** source review found that H8 was incorrectly labeled a direct match: its export completed, while T-1403 describes a failed scheduled job. It now expects related evidence and belongs to development. Earlier metrics below are historical and include that label error. See [ranking review](backend/RANKING_REVIEW.md); no ranking improvement is claimed from correcting a label.
+### Prerequisites
 
-Supabase is connected and the local configuration selects `SEARCH_BACKEND=postgres`. Two imports completed without duplication: 40 tickets, 40 resolution attempts, and 40 explicitly synthetic feedback records. Database API checks passed for sample searches, resolution lookup, missing tickets, invalid inputs, feedback modes, and history filtering. Synthetic feedback remains disabled by default; enable `USE_SYNTHETIC_FEEDBACK=1` to demonstrate it.
+- Python 3.13 and Node.js 22 were used during development.
+- npm and a recent pip version.
+- Internet access for dependency installation and the first embedding-model download.
+- A Supabase PostgreSQL connection for database mode. Local JSON mode works without Supabase.
 
-The database evaluation matched 15/16 expected assessments and retrieved 9/10 directly labeled cases in the top three. H8 (export email missing) remains classified as related; its expected case T-1403 fell outside the database top three, whereas local hybrid ranked it third. PostgreSQL `ts_rank` differs from BM25, and this regression is an open ranking issue. Results are in `backend/database_evaluation_report.json`. The original network reset PostgreSQL connections; the phone hotspot allowed successful access.
+Commands below use **PowerShell**. Start in the repository root.
 
-Follow [database setup](backend/DATABASE.md) for reproducible import and validation commands. Restart the API after changing `.env`. Use `SEARCH_BACKEND=json` for the local fallback.
-
-The implementation now includes JSON-backed BM25 and hybrid retrieval using `all-MiniLM-L6-v2` embeddings, cosine similarity, and reciprocal rank fusion. Hybrid mode is the validated default; set `$env:SEARCH_MODE = 'keyword'` in PowerShell for the baseline. Supabase persistence remains a subsequent milestone. Applicability now uses transparent heuristics with development-tuned thresholds.
-
-Validation completed: nine search/applicability tests and hybrid API checks passed, including optional synthetic feedback provenance and failed-attempt handling. The broader evaluation has 16 manually authored synthetic cases, divided into eight development cases and eight holdout cases. Development-selected thresholds are 0.75 for useful candidates and 0.25 for related cases. They are model- and dataset-specific heuristics, not probabilities.
-
-Development assessment accuracy was 8/8; holdout assessment accuracy was 7/8 with zero false-useful classifications. Both methods retrieved the relevant ticket in the top three for all five directly labeled holdout cases. The holdout export-email case H8 was conservatively labeled related despite a useful historical case. These small synthetic results do not establish production accuracy or a hybrid advantage. Full case-level results are in `backend/evaluation_report.json`.
-
-Hybrid responses now include `assessment` (`useful_cases`, `related_cases`, or `no_useful_match`), per-case `applicability`, extracted `signals`, and `differences`. Related candidates remain visible even when no useful match is found; they are investigative context, not recommended fixes. A finite integration-name list and error-code regex detect some mismatches; they do not establish root causes. Version compatibility, arbitrary integration discovery, multi-issue reasoning, and resolution clustering remain future work.
-
-Synthetic outcome fixtures are in `backend/synthetic_feedback.json`. Set `$env:USE_SYNTHETIC_FEEDBACK = '1'` before starting the API to enable them. Every fixture is invented and labeled `synthetic_demo`, with an attempt ID; T-1202 demonstrates an unsuccessful attempt. They are not inferred customer feedback. Leave this option unset to preserve unknown source outcomes. Successful fixtures receive a small ranking boost and unsuccessful attempts cannot become useful candidates. These labels demonstrate the mechanism rather than validate real-world outcome quality.
-
-Run evaluation with `.venv/Scripts/python.exe -m backend.evaluate`, API checks with `.venv/Scripts/python.exe -m backend.validate_api`, and tests with `python -m unittest backend.test_search backend.test_applicability -v`. Override heuristic thresholds through `STRONG_MATCH_THRESHOLD` and `RELATED_MATCH_THRESHOLD` only after evaluating the effect.
-
-The first hybrid startup downloads the model. Models and content-keyed historical embeddings are cached under `.cache/`. Query and historical text use the same model. Run `.venv/Scripts/python.exe -m backend.evaluate` to compare the supplied examples. Only the chart and duplicate-billing examples have direct-match labels; the password-email and Snowflake cases require applicability review. Four examples cannot establish general retrieval quality.
-
-From the repository root in PowerShell:
+### Install the backend
 
 ```powershell
 python -m venv .venv
 python -m pip --python .venv/Scripts/python.exe install -r backend/requirements.txt
-.venv/Scripts/python.exe -m uvicorn backend.main:app --reload
 ```
 
-Open http://127.0.0.1:8000/docs to try `POST /search`. Supply `subject`, `description`, optional `category`, and `limit` (1–50). Other endpoints: `GET /health`, `GET /examples`, and `GET /tickets/{ticket_id}`.
+If `.venv` already exists, skip creating it. If virtual-environment creation fails during pip bootstrapping, the second command can install dependencies into the created environment using the system pip.
 
-The demo's 12-month window ends at the latest historical ticket date. Set `HISTORY_REFERENCE_DATE` to an ISO date to override it. Outcomes remain explicitly unknown unless optional synthetic feedback is enabled. Keyword candidates require agent review, including for the unfamiliar Snowflake example.
+### Configure the application
 
-Run baseline checks with `python -m unittest backend.test_search -v`.
+Create a `.env` file at the repository root if one does not already exist. Preserve any existing credentials. For a quick local start:
 
-## Customer problem
+```dotenv
+SEARCH_BACKEND=json
+SEARCH_MODE=hybrid
+USE_SYNTHETIC_FEEDBACK=0
+HISTORY_REFERENCE_DATE=2025-11-30
+```
 
-Solari Analytics Support handles approximately 150 new support tickets per day. Agents can miss relevant past cases, leading to repeated investigation and inconsistent responses. We propose an internal tool that shows agents similar historical tickets and their recorded resolutions when they open a new ticket.
+For Supabase, add your connection URI and change the backend setting:
 
-Solari is the customer purchasing the solution. Its support agents are the direct users; retail customers benefit through faster, more consistent support.
+```dotenv
+SEARCH_BACKEND=postgres
+DATABASE_URL=postgresql://USER:URL_ENCODED_PASSWORD@HOST:5432/postgres
+```
 
-## Working assumptions
+Copy the actual URI from **Supabase → Connect → Session pooler**. Percent-encode special characters in the password. Keep `.env` private; the frontend never needs database credentials.
 
-- **History:** Search the latest 12 months of available ticket history. This is our initial scope, not a claim that older data cannot be stored. Actual coverage depends on the supplied dataset.
-- **Volume:** Start from approximately 150 incoming tickets per day. Future growth is expected, but its magnitude remains unspecified.
-- **Input:** Tickets usually include a product area and free-text description. Missing, incorrect, or multiple product areas must be handled gracefully.
-- **Similarity:** Compare issue descriptions, symptoms, product areas, and exact signals such as error codes. Similar symptoms do not establish the same root cause or guarantee that a fix applies.
-- **Resolution feedback:** Every resolved ticket has explicit user feedback indicating whether the issue was actually fixed. Associate feedback with individual resolution attempts so failed suggestions are distinguishable from successful fixes. Prioritize confirmed successful resolutions; historical success does not guarantee applicability to a new ticket. Reopened tickets require reassessment.
-- **Synthetic feedback:** If the supplied dataset lacks outcome feedback, add explicitly labeled synthetic feedback for the prototype rather than treating resolution notes as confirmed success.
-- **Agent judgment:** Agents review the evidence and decide what action to take. The prototype does not automatically apply fixes or send customer replies.
-- **Access:** Results must respect the agent's access permissions and protect sensitive ticket information.
-- **Weak matches:** Returning no useful match is an acceptable outcome. The interface should make weak evidence clear.
-- **Freshness:** New resolutions and edits, reopened tickets, and deletions should be reflected in searchable data. The refresh target remains to be defined.
-- **Data availability:** Historical tickets are available for ingestion. Their schema, completeness, resolution quality, and source-link availability still require inspection.
+| Setting | Meaning |
+| --- | --- |
+| `SEARCH_BACKEND` | `json` for local files; `postgres` for Supabase |
+| `SEARCH_MODE` | In JSON mode: `hybrid` or the `keyword` BM25 baseline. PostgreSQL mode always uses its hybrid adapter. |
+| `HISTORY_REFERENCE_DATE` | End of the 12-month search window. Use `2025-11-30` for the supplied static dataset. |
+| `USE_SYNTHETIC_FEEDBACK` | `1` enables explicitly labeled demo outcomes; `0` preserves unknown outcomes when real feedback is absent. |
+| `STRONG_MATCH_THRESHOLD` | Optional useful-candidate cosine threshold; default `0.75` |
+| `RELATED_MATCH_THRESHOLD` | Optional related-case threshold; default `0.25` |
 
-## High-level approach
+Without an explicit reference date, JSON mode uses the latest historical ticket date; PostgreSQL mode uses today's date at startup. Restart the backend after configuration changes. Existing shell environment variables take precedence over `.env` values.
 
-1. **Prepare the history.** Ingest tickets within the 12-month window, preserve source identifiers and relevant metadata, identify recorded resolutions, and group duplicate cases where possible. Keep full records accessible through source links when available.
-2. **Retrieve candidate cases.** Search using the new ticket's description, symptoms, product area, and exact signals. Prioritize matching product areas, with broader retrieval when metadata is missing or results are weak. Permission restrictions always remain enforced.
-3. **Rank useful evidence.** Consider relevance, resolution quality, recency, and available applicability details such as product version or integration. Recency alone should not outweigh a more applicable case.
-4. **Present results to the agent.** Show a small set of useful past tickets, their recorded fixes, supporting source material, and relevant differences. Clearly indicate when no useful resolved case is found.
-5. **Evaluate usefulness.** Check whether useful resolved cases appear near the top, whether misleading results are minimized, and whether weak matches are communicated clearly. Assess response time and collect agent feedback.
+### Import into Supabase — database mode only
 
-## Search and AI choices
+Skip this if the supplied dataset has already been imported into your project.
 
-We will implement hybrid retrieval with case-based ranking: combine keyword search and semantic search, then assess whether historical successful fixes are applicable. Keep keyword-only retrieval as an evaluation baseline.
+```powershell
+.venv/Scripts/python.exe -m backend.check_connection
+.venv/Scripts/python.exe -m backend.import_database --apply-schema
+```
 
-Embed meaningful problem descriptions with labeled context such as product area and integration. Store resolutions separately from the problem representation to avoid generic troubleshooting advice dominating similarity. Precompute historical embeddings and regenerate them only when relevant content changes.
+To also import the optional synthetic feedback fixtures:
 
-Use cosine similarity for semantic retrieval and rank fusion to combine keyword and semantic result lists, rather than adding their raw scores. Merge and deduplicate results into an initial candidate pool of roughly 50, then rank by relevance, exact signals, product/integration/version compatibility, confirmed success, and recency. Tune candidate counts and ranking settings through evaluation.
+```powershell
+.venv/Scripts/python.exe -m backend.import_database --include-synthetic-feedback
+```
 
-Show the strongest 3–5 distinct cases with recorded resolutions, feedback evidence, source links or source records, and relevant differences. Distinguish no relevant case from a relevant case without a successful resolution.
+Imports upsert stable IDs in one transaction. Repeating an import updates records without duplicating them. Reading synthetic feedback requires `USE_SYNTHETIC_FEEDBACK=1` separately. See [database setup](backend/DATABASE.md) for details.
 
-Regex can extract predictable signals such as error codes, HTTP statuses, and product versions. It is a supporting technique rather than the primary method for understanding similarity.
+### Run both services
 
-Retrieval delivers the core requested functionality. Defer LLM summaries until retrieval is reliable and evaluation demonstrates a need. Any future summary must remain supported by source records, preserve important conditions, and avoid inventing missing resolutions. Search similarity scores must not be presented as the probability that a fix will work.
+**Terminal 1 — backend, from the repository root:**
 
-## Finalized technology stack
+```powershell
+.venv/Scripts/python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
+```
 
-| Layer | Choice | Purpose |
-| --- | --- | --- |
-| Frontend | React, TypeScript, Vite | Internal agent interface |
-| Styling | Tailwind CSS | Ticket and result presentation |
-| Backend | Python, FastAPI | Extraction, retrieval, ranking, feedback APIs |
-| Database | Supabase PostgreSQL | Tickets, metadata, resolution attempts, and feedback |
-| Search | PostgreSQL full-text search and pgvector | Keyword and vector retrieval in one database |
-| Embeddings | Small Sentence Transformers model | Semantic representations; select model through evaluation |
-| Evaluation | Python scripts and curated cases | Compare keyword-only and hybrid retrieval |
+Wait for `Application startup complete`. First hybrid startup downloads the model; subsequent runs reuse `.cache/`.
 
-## Deployment plan
+**Terminal 2 — frontend:**
 
-Deploy the React frontend as a Render static site, FastAPI as a Render free web service, and the database on Supabase Free. Free hosting is a prototype target, subject to current service limits and measured database size and backend memory use.
+```powershell
+cd frontend
+npm ci
+npm run dev
+```
 
-Render free web services can sleep after inactivity and have an ephemeral filesystem. Persist tickets and feedback in PostgreSQL and keep a local demo fallback. Validate embedding model memory use and startup latency before finalizing deployment. Supabase Free database capacity must be checked against ticket text, embeddings, and index sizes before claiming that a full year of production history fits.
+Open the [agent workspace](http://127.0.0.1:5173/) or [interactive API documentation](http://127.0.0.1:8000/docs). Keep both terminals running. Stop a server with `Ctrl+C` in its terminal.
 
-Hosting references: [Render free services](https://render.com/docs/free) and [Supabase pricing](https://supabase.com/pricing).
+Vite forwards `/api/*` requests to `http://127.0.0.1:8000`, removing the `/api` prefix. To use another backend address, set `BACKEND_URL` in `frontend/.env.local` and restart Vite. This proxy is development/preview configuration; production needs an equivalent route or an explicitly configured API origin.
 
-## Implementation milestones
+### Try the application
 
-1. Inspect the starter dataset and utility code; verify fields, dates, resolution records, and feedback availability.
-2. Implement ingestion, database schema, structured signal extraction, and a keyword-search baseline.
-3. Add embeddings, hybrid retrieval, candidate fusion, and transparent applicability ranking.
-4. Build the agent interface: incoming ticket, suggested cases, resolution evidence, and feedback.
-5. Evaluate paraphrases, exact error matches, similar symptoms with different causes, incorrect metadata, duplicates, and no-match cases. Measure candidate retrieval separately from final ranking, plus response time.
-6. Deploy, verify persistence and resource limits, and prepare a local demonstration fallback.
+1. Load a provided example or enter a subject and description.
+2. Optionally select the product area and result count.
+3. Choose **Find similar cases**.
+4. Review applicability labels, recorded fixes, feedback provenance, and differences.
+5. Use **Open original case** to fetch the full historical record.
 
-The first end-to-end milestone is: open an example ticket, retrieve useful historical cases, inspect confirmed fixes, and correctly handle the supplied unusual ticket with no strong match.
+The sample buttons fetch actual starter examples from the backend. They do not use frontend mock data. Search does not create a new stored ticket.
 
-## Important edge cases
+### Troubleshooting
 
-- Similar symptoms with different causes or fixes.
-- Missing descriptions, incorrect product areas, or tickets containing multiple issues.
-- Closed tickets without resolutions, reopened tickets, and unsuccessful suggestions within a conversation.
-- Conflicting fixes, outdated workarounds, and version-specific resolutions.
-- Duplicate incident tickets crowding out other useful results.
-- No relevant historical case, or a relevant case without a usable resolution.
-- Sensitive information, restricted tickets, and instructions embedded in ticket text; ticket content is data, not system instructions.
-- Search failures, stale records, and updates or deletions in the source system.
+- **Connection reset or timeout:** run the connection checker. During development, one Wi-Fi network blocked PostgreSQL traffic; a phone hotspot worked. Also check Supabase project status and network restrictions.
+- **Port already in use:** use the already-running service or stop it in its original terminal before restarting.
+- **No historical tickets:** check the reference date and whether the database import completed.
+- **Model download unavailable:** once cached, set `$env:HF_HUB_OFFLINE='1'`. For a model-free fallback, use JSON mode with `SEARCH_MODE=keyword`.
+- **Frontend service error:** confirm the backend is running, its database is reachable, and the Vite proxy target is correct.
 
-## Prototype scope and open decisions
+## 2. Problem overview
 
-The prototype focuses on discovering historical cases and making their resolutions reviewable. Automatic replies, automatic fixes, incident detection, and attachment interpretation are potential future extensions.
+The case study assumes around 150 incoming support tickets daily. Agents sometimes repeat investigations or give inconsistent answers because they cannot easily discover similar resolved cases.
 
-The architecture above is agreed. Remaining decisions include embedding model selection, ranking settings and no-match criteria, response-time expectations, refresh frequency, growth scenarios, and the source system's access rules. Validate these against the supplied data and deployment constraints. Define the reference date for the 12-month window explicitly so static synthetic data is not silently excluded by the live calendar.
+HCLTech Support provides historical evidence at the point of investigation. Support agents are the direct users; end customers benefit indirectly through potentially faster and more consistent support. The tool assists judgment rather than automatically applying fixes or sending replies.
 
-Business success means less repeated investigation and more appropriate, consistent responses. Prototype evaluation will focus on retrieval usefulness, resolution evidence, handling of weak matches, and response time; business impact requires validation with agents.
+## 3. Assumptions
 
+- Search the latest **12 months** of available history. The prototype contains 40 synthetic historical tickets and four supplied incoming examples.
+- `category` represents product area. Subjects and descriptions are available; incoming category may be missing or incorrect.
+- Similar symptoms suggest candidate cases but do not establish the same root cause.
+- The intended business process provides outcome feedback for resolved tickets. The actual sample data lacks it, so optional fixtures demonstrate that assumption without claiming real confirmation.
+- A ticket's `resolved` status alone does not prove that its resolution succeeded.
+- Returning related evidence or no useful match is acceptable. Scores are not probabilities of success.
+- Agents need access-controlled historical data in production. Authentication and per-ticket authorization are **not implemented** in this prototype.
+- Future growth is unspecified. Storage capacity, refresh targets, and production latency require measurement rather than assumptions based solely on ticket count.
+
+## 4. Our approach
+
+```text
+Historical tickets → problem embeddings + searchable text + recorded resolutions
+                                          ↓
+New ticket → keyword and semantic retrieval → rank fusion → applicability checks
+                                          ↓
+                         Agent reviews source cases and recorded fixes
+```
+
+1. **Prepare history:** preserve source IDs and metadata; embed subject plus description; keep resolution notes separate.
+2. **Retrieve:** get up to 50 keyword candidates and 50 semantic candidates within the history window.
+3. **Combine:** deduplicate by ticket ID and fuse rank positions. Retain up to 50 combined candidates.
+4. **Rank:** matching category receives a small boost. Eligible successful feedback boosts ranking; unsuccessful feedback lowers it.
+5. **Assess:** identify supported integration/error signals, flag differences, and classify useful, related, or weak candidates.
+6. **Present:** return five cases by default, with original descriptions, resolution notes, source lookup, and uncertainty visible.
+
+### Implemented stack
+
+| Layer | Technology |
+| --- | --- |
+| Frontend | React, TypeScript, Vite, responsive plain CSS |
+| API | Python, FastAPI, Pydantic |
+| Database | Supabase PostgreSQL, psycopg, pgvector |
+| Embeddings | Sentence Transformers `all-MiniLM-L6-v2`, 384 dimensions |
+| Evaluation | Python tests and authored synthetic relevance cases |
+
+### API surface
+
+| Endpoint | Purpose |
+| --- | --- |
+| `POST /search` | Retrieve and rank historical cases |
+| `GET /tickets/{ticket_id}` | Fetch one source record within active history |
+| `GET /examples` | Return the supplied incoming examples |
+| `GET /health` | Report service status and active ticket count |
+
+Example search body:
+
+```json
+{
+  "subject": "Getting charged twice this month",
+  "description": "Two charges appeared for a single monthly subscription payment.",
+  "category": "billing",
+  "limit": 5
+}
+```
+
+The response includes `matches`, `assessment`, history metadata, and retrieval details. Each match includes the original ticket, ranking signals, applicability, outcome provenance, and detected differences. There are no authentication, ticket-editing, or feedback-submission endpoints yet.
+
+## 5. Search and AI choices
+
+**Keyword search:** the local baseline uses BM25. Database mode uses PostgreSQL English full-text search with an OR query and `ts_rank`; it is not BM25 and can order results differently. A GIN index supports text matching.
+
+**Semantic search:** the same model embeds historical and incoming problem text. Normalized embeddings support cosine similarity. Supabase currently performs exact vector search; approximate indexing is deferred until needed.
+
+**Rank fusion:** raw keyword and cosine scores have different scales, so candidates use reciprocal rank fusion:
+
+```text
+score = 1 / (60 + keyword_rank) + 1 / (60 + semantic_rank)
+```
+
+A missing rank contributes zero. Category agreement multiplies the score by `1.15`; confirmed successful feedback by `1.05`; confirmed unsuccessful feedback by `0.8`. Actual user feedback takes precedence over synthetic feedback in database mode. Recency currently acts through the history filter, not an additional ranking boost.
+
+**Applicability:** regex extracts 4xx/5xx codes and `ERR_*` identifiers; a finite name list detects integrations. Missing or conflicting requested signals prevent a useful-candidate label. Otherwise, cosine thresholds of `0.75` and `0.25` distinguish useful, related, and weak cases. Unsuccessful resolutions are downgraded. These are development-tuned heuristics, not calibrated confidence estimates. Related context may remain visible even when the overall result is `no_useful_match`.
+
+**Generation:** no LLM-generated answer is used. This is hybrid retrieval with case-based ranking. Grounded summaries are a future option if agent testing establishes a benefit.
+
+## 6. Implementation milestones and validation
+
+| Milestone | Status |
+| --- | --- |
+| Inspect samples and build BM25 baseline | Complete |
+| Add embeddings, rank fusion, and model caching | Complete |
+| Add applicability checks and optional synthetic outcomes | Complete, with heuristic limitations |
+| Create Supabase schema and repeatable import | Complete; repeated import retained 40 records per imported table |
+| Validate database search and API behavior | Complete for the tested synthetic scenarios |
+| Build frontend and integrate API calls | Implemented; TypeScript and production build pass |
+| Complete browser interaction and visual responsiveness QA | Pending; browser automation was blocked |
+| Package and deploy publicly | Pending; hosting provider not finalized |
+
+The latest database evaluation matched **22/22 expected assessments**, with all **14 directly labeled cases in the top three**. This small authored set does not establish production accuracy or superiority over keyword search. One original label was corrected after source review: a completed export with missing email was not equivalent to a failed scheduled report job. Correcting that label was not a ranking improvement. See [ranking review](backend/RANKING_REVIEW.md) and [database results](backend/database_evaluation_report.json).
+
+### Run checks
+
+From the repository root:
+
+```powershell
+.venv/Scripts/python.exe -m unittest backend.test_search backend.test_applicability -v
+.venv/Scripts/python.exe -m backend.validate_api
+.venv/Scripts/python.exe -m backend.validate_database_api
+.venv/Scripts/python.exe -m backend.validate_database
+```
+
+`validate_api` exercises local hybrid mode. Database checks require Supabase access and the imported fixtures. `backend.evaluate` compares local retrieval and tunes thresholds on its development cases; it writes a separate local report and does not automatically change API defaults.
+
+Build the frontend:
+
+```powershell
+cd frontend
+npm run build
+npm run preview
+```
+
+Preview still requires a running backend. `frontend/dist/` contains the production assets.
+
+## 7. Future scope and open decisions
+
+- **Quality:** stronger symptom/negation handling, version compatibility, multiple issues, and broader independently labeled evaluation. Related cases can still be poor investigative matches.
+- **History maintenance:** incremental ingestion, source edits/deletions, reopened tickets, and selection across multiple resolution attempts. Current imports are manual.
+- **Security:** agent authentication, authorization, sensitive-data handling, and least-privilege database access before production exposure.
+- **Agent workflow:** feedback submission, resolution-attempt management, duplicate incident grouping, and integration with a real support platform.
+- **Performance:** establish response-time and concurrency targets; measure memory, database pooling, cold starts, and vector-index tradeoffs.
+- **Deployment:** choose a provider and budget; package the embedding model; configure secrets and production frontend/API routing. Google Cloud Run was proposed, but no deployment has been made and a zero-cost bill is not guaranteed.
+- **Optional generation:** source-grounded summaries after retrieval usefulness is demonstrated. Automated customer replies and fixes remain outside the current scope.
+
+## Repository guide
+
+```text
+frontend/                  React application, API client, styles, Vite configuration
+backend/                   FastAPI, search engines, applicability, import and validation
+starter_kit/data/          Original historical and incoming sample tickets
+DESIGN.md                  Concise architecture and backend logic explanation
+backend/DATABASE.md        Supabase setup and import details
+backend/RANKING_REVIEW.md   Evaluation-label correction and ranking diagnosis
+.env                       Local configuration and secrets (ignored by Git)
+.cache/                    Downloaded model and cached embeddings (ignored by Git)
+```
