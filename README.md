@@ -38,9 +38,9 @@ Run baseline checks with `python -m unittest backend.test_search -v`.
 
 ## Customer problem
 
-HCLTech Support handles approximately 150 new support tickets per day. Agents can miss relevant past cases, leading to repeated investigation and inconsistent responses. We propose an internal tool that shows agents similar historical tickets and their recorded resolutions when they open a new ticket.
+Solari Analytics Support handles approximately 150 new support tickets per day. Agents can miss relevant past cases, leading to repeated investigation and inconsistent responses. We propose an internal tool that shows agents similar historical tickets and their recorded resolutions when they open a new ticket.
 
-HCLTech Support is the customer purchasing the solution. Its support agents are the direct users; retail customers benefit through faster, more consistent support.
+Solari is the customer purchasing the solution. Its support agents are the direct users; retail customers benefit through faster, more consistent support.
 
 ## Working assumptions
 
