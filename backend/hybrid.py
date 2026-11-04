@@ -1,6 +1,7 @@
 """Local vector retrieval with normalized embeddings and reciprocal rank fusion."""
 import hashlib
 import json
+import os
 from pathlib import Path
 from backend.search import TicketSearch, tokens
 
@@ -8,6 +9,14 @@ from backend.search import TicketSearch, tokens
 class HybridSearch(TicketSearch):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.strong_threshold = float(os.getenv('STRONG_MATCH_THRESHOLD', '0.75'))
+        self.related_threshold = float(os.getenv('RELATED_MATCH_THRESHOLD', '0.25'))
+        if not 0 <= self.related_threshold < self.strong_threshold <= 1:
+            raise ValueError('Require 0 <= related threshold < strong threshold <= 1')
+        self.feedback = {}
+        if os.getenv('USE_SYNTHETIC_FEEDBACK', '0') == '1':
+            fixture = Path(__file__).with_name('synthetic_feedback.json')
+            self.feedback = {a['ticket_id']: a for a in json.loads(fixture.read_text())['attempts']}
         import numpy as np
         from sentence_transformers import SentenceTransformer
         self.np = np
@@ -21,13 +30,13 @@ class HybridSearch(TicketSearch):
         if target.exists():
             self.vectors = np.load(target, allow_pickle=False)
         else:
-            self.vectors = self.model.encode(texts, normalize_embeddings=True)
+            self.vectors = self.model.encode(texts, normalize_embeddings=True) if texts else np.empty((0, self.model.get_sentence_embedding_dimension()))
             np.save(target, self.vectors)
 
     def search(self, subject, description, category=None, limit=5):
         baseline = super().search(subject, description, category=None, limit=50)
         if not tokens(subject + ' ' + description) or not self.tickets:
-            baseline.update(method='hybrid_rrf', matches=[])
+            baseline.update(method='hybrid_rrf', matches=[], assessment='no_useful_match')
             return baseline
         vector = self.model.encode([subject + '\n' + description], normalize_embeddings=True)[0]
         similarities = self.vectors @ vector
@@ -46,14 +55,26 @@ class HybridSearch(TicketSearch):
             category_match = bool(category and category == ticket['category'])
             if category_match:
                 score *= 1.15
+            feedback = self.feedback.get(key, {})
+            if feedback.get('outcome') == 'confirmed_resolved':
+                score *= 1.05
+            elif feedback.get('outcome') == 'confirmed_unresolved':
+                score *= 0.8
             results.append({'ticket': ticket, 'score': round(score, 6),
                             'cosine_similarity': round(float(similarities[i]), 4),
                             'keyword_rank': kr, 'semantic_rank': sr,
                             'matched_terms': original.get('matched_terms', []),
-                            'category_match': category_match, 'outcome': 'unknown',
-                            'outcome_source': 'not_provided'})
+                            'category_match': category_match, 'outcome': feedback.get('outcome', 'unknown'),
+                            'outcome_source': feedback.get('source', 'not_provided'),
+                            'resolution_attempt_id': feedback.get('attempt_id')})
         results.sort(key=lambda m: (-m['score'], m['ticket']['ticket_id']))
+        results = results[:50]
+        from backend.applicability import assess
+        assessment, query_signals = assess(results, subject + '\n' + description, category,
+                                            self.strong_threshold, self.related_threshold)
         baseline.update(matches=results[:limit], method='hybrid_rrf', model=self.model_name,
-                        assessment='candidates_require_review',
-                        notice='Scores are retrieval signals, not fix probabilities. No-match thresholds remain uncalibrated.')
+                        assessment=assessment, query_signals=query_signals,
+                        thresholds={'strong': self.strong_threshold, 'related': self.related_threshold},
+                        synthetic_feedback_enabled=bool(self.feedback),
+                        notice='Heuristic applicability requires agent review. Scores are not fix probabilities; synthetic outcomes are demo data.')
         return baseline

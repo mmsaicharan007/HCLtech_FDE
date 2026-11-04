@@ -4,7 +4,21 @@
 
 ## Running the initial backend
 
-The implementation now includes JSON-backed BM25 and hybrid retrieval using `all-MiniLM-L6-v2` embeddings, cosine similarity, and reciprocal rank fusion. Keyword mode remains the default pending successful model installation and evaluation; set `$env:SEARCH_MODE = 'hybrid'` in PowerShell to enable hybrid retrieval. Supabase persistence and calibrated no-match decisions remain subsequent milestones.
+### Database integration
+
+The PostgreSQL adapter, schema, repeatable import, and read-only database evaluation script are prepared. Live Supabase validation is pending project configuration. Follow [database setup](backend/DATABASE.md), then run `.venv/Scripts/python.exe -m backend.validate_database`. Keep `SEARCH_BACKEND=json` until import succeeds; select `postgres` to activate database retrieval. PostgreSQL keyword ranking uses `ts_rank`, not BM25, so existing local evaluation results do not validate database ordering.
+
+The implementation now includes JSON-backed BM25 and hybrid retrieval using `all-MiniLM-L6-v2` embeddings, cosine similarity, and reciprocal rank fusion. Hybrid mode is the validated default; set `$env:SEARCH_MODE = 'keyword'` in PowerShell for the baseline. Supabase persistence remains a subsequent milestone. Applicability now uses transparent heuristics with development-tuned thresholds.
+
+Validation completed: nine search/applicability tests and hybrid API checks passed, including optional synthetic feedback provenance and failed-attempt handling. The broader evaluation has 16 manually authored synthetic cases, divided into eight development cases and eight holdout cases. Development-selected thresholds are 0.75 for useful candidates and 0.25 for related cases. They are model- and dataset-specific heuristics, not probabilities.
+
+Development assessment accuracy was 8/8; holdout assessment accuracy was 7/8 with zero false-useful classifications. Both methods retrieved the relevant ticket in the top three for all five directly labeled holdout cases. The holdout export-email case H8 was conservatively labeled related despite a useful historical case. These small synthetic results do not establish production accuracy or a hybrid advantage. Full case-level results are in `backend/evaluation_report.json`.
+
+Hybrid responses now include `assessment` (`useful_cases`, `related_cases`, or `no_useful_match`), per-case `applicability`, extracted `signals`, and `differences`. Related candidates remain visible even when no useful match is found; they are investigative context, not recommended fixes. A finite integration-name list and error-code regex detect some mismatches; they do not establish root causes. Version compatibility, arbitrary integration discovery, multi-issue reasoning, and resolution clustering remain future work.
+
+Synthetic outcome fixtures are in `backend/synthetic_feedback.json`. Set `$env:USE_SYNTHETIC_FEEDBACK = '1'` before starting the API to enable them. Every fixture is invented and labeled `synthetic_demo`, with an attempt ID; T-1202 demonstrates an unsuccessful attempt. They are not inferred customer feedback. Leave this option unset to preserve unknown source outcomes. Successful fixtures receive a small ranking boost and unsuccessful attempts cannot become useful candidates. These labels demonstrate the mechanism rather than validate real-world outcome quality.
+
+Run evaluation with `.venv/Scripts/python.exe -m backend.evaluate`, API checks with `.venv/Scripts/python.exe -m backend.validate_api`, and tests with `python -m unittest backend.test_search backend.test_applicability -v`. Override heuristic thresholds through `STRONG_MATCH_THRESHOLD` and `RELATED_MATCH_THRESHOLD` only after evaluating the effect.
 
 The first hybrid startup downloads the model. Models and content-keyed historical embeddings are cached under `.cache/`. Query and historical text use the same model. Run `.venv/Scripts/python.exe -m backend.evaluate` to compare the supplied examples. Only the chart and duplicate-billing examples have direct-match labels; the password-email and Snowflake cases require applicability review. Four examples cannot establish general retrieval quality.
 
@@ -18,7 +32,7 @@ python -m pip --python .venv/Scripts/python.exe install -r backend/requirements.
 
 Open http://127.0.0.1:8000/docs to try `POST /search`. Supply `subject`, `description`, optional `category`, and `limit` (1–50). Other endpoints: `GET /health`, `GET /examples`, and `GET /tickets/{ticket_id}`.
 
-The demo's 12-month window ends at the latest historical ticket date. Set `HISTORY_REFERENCE_DATE` to an ISO date to override it. Outcomes remain explicitly unknown until separate synthetic feedback is supplied. Keyword candidates require agent review, including for the unfamiliar Snowflake example.
+The demo's 12-month window ends at the latest historical ticket date. Set `HISTORY_REFERENCE_DATE` to an ISO date to override it. Outcomes remain explicitly unknown unless optional synthetic feedback is enabled. Keyword candidates require agent review, including for the unfamiliar Snowflake example.
 
 Run baseline checks with `python -m unittest backend.test_search -v`.
 

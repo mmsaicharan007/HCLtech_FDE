@@ -5,13 +5,17 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, model_validator
 from backend.search import DATA, TicketSearch
 import json
+from backend.db import connect  # Loads local .env without exposing credentials.
 
 
 @asynccontextmanager
 async def lifespan(app):
     configured = os.getenv('HISTORY_REFERENCE_DATE')
     from backend.hybrid import HybridSearch
-    engine = TicketSearch if os.getenv('SEARCH_MODE', 'keyword') == 'keyword' else HybridSearch
+    engine = TicketSearch if os.getenv('SEARCH_MODE', 'hybrid') == 'keyword' else HybridSearch
+    if os.getenv('SEARCH_BACKEND', 'json') == 'postgres':
+        from backend.postgres_search import PostgresSearch
+        engine = PostgresSearch
     app.state.search = engine(reference_date=date.fromisoformat(configured) if configured else None)
     yield
 
@@ -44,6 +48,11 @@ def search(request: SearchRequest):
 
 @app.get('/tickets/{ticket_id}')
 def ticket(ticket_id: str):
+    if hasattr(app.state.search, 'get_ticket'):
+        record = app.state.search.get_ticket(ticket_id)
+        if record:
+            return record
+        raise HTTPException(404, 'Ticket not found in active history')
     for record in app.state.search.tickets:
         if record['ticket_id'] == ticket_id:
             return record

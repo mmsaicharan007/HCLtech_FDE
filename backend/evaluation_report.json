@@ -1,0 +1,334 @@
+{
+  "limitations": "Small authored synthetic set; holdout excluded from threshold selection. Not production accuracy.",
+  "thresholds": {
+    "strong": 0.75,
+    "related": 0.25
+  },
+  "development_weighted_loss": 0,
+  "summary": {
+    "development": {
+      "assessment_correct": 8,
+      "total": 8,
+      "false_useful": 0,
+      "direct_cases": 5,
+      "keyword_recall_at3": 1.0,
+      "hybrid_recall_at3": 1.0
+    },
+    "holdout": {
+      "assessment_correct": 7,
+      "total": 8,
+      "false_useful": 0,
+      "direct_cases": 5,
+      "keyword_recall_at3": 1.0,
+      "hybrid_recall_at3": 1.0
+    }
+  },
+  "cases": [
+    {
+      "id": "D1",
+      "split": "development",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "relevant": [
+        "T-1201"
+      ],
+      "keyword_top3": [
+        "T-1201",
+        "T-1501",
+        "T-1203"
+      ],
+      "hybrid_top3": [
+        "T-1201",
+        "T-1101",
+        "T-1203"
+      ],
+      "top_cosine": 0.9009
+    },
+    {
+      "id": "D2",
+      "split": "development",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "relevant": [
+        "T-1303"
+      ],
+      "keyword_top3": [
+        "T-1303",
+        "T-1305",
+        "T-1302"
+      ],
+      "hybrid_top3": [
+        "T-1303",
+        "T-1305",
+        "T-1103"
+      ],
+      "top_cosine": 0.7864
+    },
+    {
+      "id": "D3",
+      "split": "development",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "relevant": [
+        "T-1101"
+      ],
+      "keyword_top3": [
+        "T-1101",
+        "T-1201",
+        "T-1401"
+      ],
+      "hybrid_top3": [
+        "T-1101",
+        "T-1201",
+        "T-1102"
+      ],
+      "top_cosine": 0.873
+    },
+    {
+      "id": "D4",
+      "split": "development",
+      "expected": "no_useful_match",
+      "actual": "no_useful_match",
+      "relevant": [],
+      "keyword_top3": [
+        "T-1105",
+        "T-1402",
+        "T-1703"
+      ],
+      "hybrid_top3": [
+        "T-1105",
+        "T-1703",
+        "T-1402"
+      ],
+      "top_cosine": 0.4514
+    },
+    {
+      "id": "D5",
+      "split": "development",
+      "expected": "related_cases",
+      "actual": "related_cases",
+      "relevant": [],
+      "keyword_top3": [
+        "T-1001",
+        "T-1003",
+        "T-1104"
+      ],
+      "hybrid_top3": [
+        "T-1001",
+        "T-1003",
+        "T-1403"
+      ],
+      "top_cosine": 0.6065
+    },
+    {
+      "id": "D6",
+      "split": "development",
+      "expected": "no_useful_match",
+      "actual": "no_useful_match",
+      "relevant": [],
+      "keyword_top3": [
+        "T-1504",
+        "T-1304",
+        "T-1003"
+      ],
+      "hybrid_top3": [
+        "T-1101",
+        "T-1304",
+        "T-1305"
+      ],
+      "top_cosine": 0.2495
+    },
+    {
+      "id": "D7",
+      "split": "development",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "relevant": [
+        "T-1702"
+      ],
+      "keyword_top3": [
+        "T-1702",
+        "T-1604",
+        "T-1703"
+      ],
+      "hybrid_top3": [
+        "T-1702",
+        "T-1703",
+        "T-1701"
+      ],
+      "top_cosine": 0.7719
+    },
+    {
+      "id": "D8",
+      "split": "development",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "relevant": [
+        "T-1501"
+      ],
+      "keyword_top3": [
+        "T-1501",
+        "T-1201",
+        "T-1503"
+      ],
+      "hybrid_top3": [
+        "T-1501",
+        "T-1201",
+        "T-1205"
+      ],
+      "top_cosine": 0.843
+    },
+    {
+      "id": "H1",
+      "split": "holdout",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "relevant": [
+        "T-1301"
+      ],
+      "keyword_top3": [
+        "T-1301",
+        "T-1104",
+        "T-1405"
+      ],
+      "hybrid_top3": [
+        "T-1301",
+        "T-1303",
+        "T-1305"
+      ],
+      "top_cosine": 0.8426
+    },
+    {
+      "id": "H2",
+      "split": "holdout",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "relevant": [
+        "T-1205"
+      ],
+      "keyword_top3": [
+        "T-1205",
+        "T-1005",
+        "T-1104"
+      ],
+      "hybrid_top3": [
+        "T-1205",
+        "T-1005",
+        "T-1601"
+      ],
+      "top_cosine": 0.8909
+    },
+    {
+      "id": "H3",
+      "split": "holdout",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "relevant": [
+        "T-1002"
+      ],
+      "keyword_top3": [
+        "T-1002",
+        "T-1201",
+        "T-1603"
+      ],
+      "hybrid_top3": [
+        "T-1002",
+        "T-1505",
+        "T-1105"
+      ],
+      "top_cosine": 0.9275
+    },
+    {
+      "id": "H4",
+      "split": "holdout",
+      "expected": "no_useful_match",
+      "actual": "no_useful_match",
+      "relevant": [],
+      "keyword_top3": [
+        "T-1105",
+        "T-1703",
+        "T-1501"
+      ],
+      "hybrid_top3": [
+        "T-1105",
+        "T-1703",
+        "T-1501"
+      ],
+      "top_cosine": 0.4193
+    },
+    {
+      "id": "H5",
+      "split": "holdout",
+      "expected": "related_cases",
+      "actual": "related_cases",
+      "relevant": [],
+      "keyword_top3": [
+        "T-1302",
+        "T-1204",
+        "T-1503"
+      ],
+      "hybrid_top3": [
+        "T-1304",
+        "T-1302",
+        "T-1204"
+      ],
+      "top_cosine": 0.2727
+    },
+    {
+      "id": "H6",
+      "split": "holdout",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "relevant": [
+        "T-1703"
+      ],
+      "keyword_top3": [
+        "T-1703",
+        "T-1701",
+        "T-1702"
+      ],
+      "hybrid_top3": [
+        "T-1703",
+        "T-1701",
+        "T-1702"
+      ],
+      "top_cosine": 0.9119
+    },
+    {
+      "id": "H7",
+      "split": "holdout",
+      "expected": "no_useful_match",
+      "actual": "no_useful_match",
+      "relevant": [],
+      "keyword_top3": [
+        "T-1004"
+      ],
+      "hybrid_top3": [
+        "T-1004",
+        "T-1205",
+        "T-1001"
+      ],
+      "top_cosine": 0.1423
+    },
+    {
+      "id": "H8",
+      "split": "holdout",
+      "expected": "useful_cases",
+      "actual": "related_cases",
+      "relevant": [
+        "T-1403"
+      ],
+      "keyword_top3": [
+        "T-1401",
+        "T-1403",
+        "T-1104"
+      ],
+      "hybrid_top3": [
+        "T-1401",
+        "T-1104",
+        "T-1403"
+      ],
+      "top_cosine": 0.6373
+    }
+  ]
+}

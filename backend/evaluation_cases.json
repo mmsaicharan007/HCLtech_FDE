@@ -1,0 +1,21 @@
+{
+  "provenance": "Manually authored synthetic relevance judgments; direct means useful investigation evidence, not a guaranteed fix.",
+  "cases": [
+    {"id":"D1","split":"development","subject":"Revenue graph is an empty white rectangle","description":"No bars or axis labels appear in the chart.","expected":"useful_cases","relevant":["T-1201"]},
+    {"id":"D2","split":"development","subject":"Two subscription payments","description":"The card was debited twice for the same monthly billing cycle.","expected":"useful_cases","relevant":["T-1303"]},
+    {"id":"D3","split":"development","subject":"Salesforce data stale","description":"Opportunity data has stopped syncing into the revenue dashboard for three days.","expected":"useful_cases","relevant":["T-1101"]},
+    {"id":"D4","split":"development","subject":"Snowflake integration failing","description":"New warehouse connection fails with an unclear connection error.","expected":"no_useful_match","relevant":[]},
+    {"id":"D5","split":"development","subject":"Password reset email never arrives","description":"Reset email missing even after checking spam.","expected":"related_cases","relevant":[]},
+    {"id":"D6","split":"development","subject":"Broken office printer","description":"Printer has a paper jam and will not print.","expected":"no_useful_match","relevant":[]},
+    {"id":"D7","split":"development","subject":"API receiving 429 responses","description":"Integration reaches the rate limit during unchanged normal usage.","expected":"useful_cases","relevant":["T-1702"]},
+    {"id":"D8","split":"development","subject":"User sees no dashboards","description":"Newly invited user logs in successfully but the dashboard list is empty.","category":"render","expected":"useful_cases","relevant":["T-1501"]},
+    {"id":"H1","split":"holdout","subject":"Charged for inactive users","description":"Invoice counts 25 seats even though only 18 users remain active.","category":"billing","expected":"useful_cases","relevant":["T-1301"]},
+    {"id":"H2","split":"holdout","subject":"Dashboard never finishes opening","description":"Loading spinner continues indefinitely even after refreshing.","expected":"useful_cases","relevant":["T-1205"]},
+    {"id":"H3","split":"holdout","subject":"Okta sign-in ends in white page","description":"After successful SSO authentication the application redirects to a blank page.","expected":"useful_cases","relevant":["T-1002"]},
+    {"id":"H4","split":"holdout","subject":"BigQuery connection error","description":"New BigQuery integration cannot connect to the warehouse.","expected":"no_useful_match","relevant":[]},
+    {"id":"H5","split":"holdout","subject":"Refund policy for cancellation","description":"Can we get a refund when cancelling a subscription?","category":"billing","expected":"related_cases","relevant":[]},
+    {"id":"H6","split":"holdout","subject":"API produces intermittent 500 errors","description":"Valid requests fail intermittently on an otherwise working endpoint.","expected":"useful_cases","relevant":["T-1703"]},
+    {"id":"H7","split":"holdout","subject":"My bicycle tire is punctured","description":"How do I replace the inner tube?","expected":"no_useful_match","relevant":[]},
+    {"id":"H8","split":"holdout","subject":"Email export never delivered","description":"CSV export email is missing despite the export finishing.","expected":"useful_cases","relevant":["T-1403"]}
+  ]
+}

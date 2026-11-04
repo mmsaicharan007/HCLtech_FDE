@@ -1,0 +1,285 @@
+{
+  "provenance": "Synthetic demo fixtures, not actual customer feedback. Outcomes assigned for demonstration only.",
+  "attempts": [
+    {
+      "ticket_id": "T-1001",
+      "attempt_id": "T-1001-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1002",
+      "attempt_id": "T-1002-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1003",
+      "attempt_id": "T-1003-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1004",
+      "attempt_id": "T-1004-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1005",
+      "attempt_id": "T-1005-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1101",
+      "attempt_id": "T-1101-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1102",
+      "attempt_id": "T-1102-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1103",
+      "attempt_id": "T-1103-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1104",
+      "attempt_id": "T-1104-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1105",
+      "attempt_id": "T-1105-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1201",
+      "attempt_id": "T-1201-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1202",
+      "attempt_id": "T-1202-demo-1",
+      "outcome": "confirmed_unresolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1203",
+      "attempt_id": "T-1203-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1204",
+      "attempt_id": "T-1204-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1205",
+      "attempt_id": "T-1205-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1301",
+      "attempt_id": "T-1301-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1302",
+      "attempt_id": "T-1302-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1303",
+      "attempt_id": "T-1303-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1304",
+      "attempt_id": "T-1304-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1305",
+      "attempt_id": "T-1305-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1401",
+      "attempt_id": "T-1401-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1402",
+      "attempt_id": "T-1402-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1403",
+      "attempt_id": "T-1403-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1404",
+      "attempt_id": "T-1404-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1405",
+      "attempt_id": "T-1405-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1501",
+      "attempt_id": "T-1501-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1502",
+      "attempt_id": "T-1502-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1503",
+      "attempt_id": "T-1503-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1504",
+      "attempt_id": "T-1504-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1505",
+      "attempt_id": "T-1505-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1601",
+      "attempt_id": "T-1601-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1602",
+      "attempt_id": "T-1602-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1603",
+      "attempt_id": "T-1603-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1604",
+      "attempt_id": "T-1604-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1605",
+      "attempt_id": "T-1605-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1701",
+      "attempt_id": "T-1701-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1702",
+      "attempt_id": "T-1702-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1703",
+      "attempt_id": "T-1703-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1704",
+      "attempt_id": "T-1704-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    },
+    {
+      "ticket_id": "T-1705",
+      "attempt_id": "T-1705-demo-1",
+      "outcome": "confirmed_resolved",
+      "source": "synthetic_demo",
+      "comment": "Invented outcome for demonstration; original resolution notes unchanged."
+    }
+  ]
+}
