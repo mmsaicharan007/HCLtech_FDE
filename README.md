@@ -2,6 +2,28 @@
 
 ## Problem
 
+## Running the initial backend
+
+The implementation now includes JSON-backed BM25 and hybrid retrieval using `all-MiniLM-L6-v2` embeddings, cosine similarity, and reciprocal rank fusion. Keyword mode remains the default pending successful model installation and evaluation; set `$env:SEARCH_MODE = 'hybrid'` in PowerShell to enable hybrid retrieval. Supabase persistence and calibrated no-match decisions remain subsequent milestones.
+
+The first hybrid startup downloads the model. Models and content-keyed historical embeddings are cached under `.cache/`. Query and historical text use the same model. Run `.venv/Scripts/python.exe -m backend.evaluate` to compare the supplied examples. Only the chart and duplicate-billing examples have direct-match labels; the password-email and Snowflake cases require applicability review. Four examples cannot establish general retrieval quality.
+
+From the repository root in PowerShell:
+
+```powershell
+python -m venv .venv
+python -m pip --python .venv/Scripts/python.exe install -r backend/requirements.txt
+.venv/Scripts/python.exe -m uvicorn backend.main:app --reload
+```
+
+Open http://127.0.0.1:8000/docs to try `POST /search`. Supply `subject`, `description`, optional `category`, and `limit` (1–50). Other endpoints: `GET /health`, `GET /examples`, and `GET /tickets/{ticket_id}`.
+
+The demo's 12-month window ends at the latest historical ticket date. Set `HISTORY_REFERENCE_DATE` to an ISO date to override it. Outcomes remain explicitly unknown until separate synthetic feedback is supplied. Keyword candidates require agent review, including for the unfamiliar Snowflake example.
+
+Run baseline checks with `python -m unittest backend.test_search -v`.
+
+## Customer problem
+
 HCLTech Support handles approximately 150 new support tickets per day. Agents can miss relevant past cases, leading to repeated investigation and inconsistent responses. We propose an internal tool that shows agents similar historical tickets and their recorded resolutions when they open a new ticket.
 
 HCLTech Support is the customer purchasing the solution. Its support agents are the direct users; retail customers benefit through faster, more consistent support.
