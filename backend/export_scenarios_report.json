@@ -1,0 +1,107 @@
+[
+  {
+    "scenario": "export_complete_email_missing",
+    "input": {
+      "subject": "Export completed but email never arrives",
+      "description": "The CSV export job completed successfully, but the email containing the download link has not arrived.",
+      "category": "export"
+    },
+    "assessment": "related_cases",
+    "matches": [
+      {
+        "ticket_id": "T-1401",
+        "subject": "CSV export missing last week of data",
+        "resolution_notes": "The export job's date range used the same UTC/local timezone gap as the sync issue in T-1104. Applied the same buffer fix to the export query.",
+        "cosine_similarity": 0.5346,
+        "applicability": "related",
+        "differences": []
+      },
+      {
+        "ticket_id": "T-1405",
+        "subject": "Export button greyed out for read-only users",
+        "resolution_notes": "This was expected behavior per the permission model, but the customer wasn't aware exports required editor-level access. Clarified the permission model and upgraded the specific user's role at the admin's request.",
+        "cosine_similarity": 0.4081,
+        "applicability": "related",
+        "differences": []
+      },
+      {
+        "ticket_id": "T-1404",
+        "subject": "Exported numbers don't match dashboard totals",
+        "resolution_notes": "The export used a slightly different filter default (including cancelled orders) than the dashboard view. Aligned both to exclude cancelled orders by default and documented the distinction.",
+        "cosine_similarity": 0.4062,
+        "applicability": "related",
+        "differences": []
+      }
+    ]
+  },
+  {
+    "scenario": "export_arrived_records_missing",
+    "input": {
+      "subject": "Export arrives but recent transactions are absent",
+      "description": "The CSV export was delivered, but the most recent seven days of transactions are absent from the file.",
+      "category": "export"
+    },
+    "assessment": "useful_cases",
+    "matches": [
+      {
+        "ticket_id": "T-1401",
+        "subject": "CSV export missing last week of data",
+        "resolution_notes": "The export job's date range used the same UTC/local timezone gap as the sync issue in T-1104. Applied the same buffer fix to the export query.",
+        "cosine_similarity": 0.8503,
+        "applicability": "useful_candidate",
+        "differences": []
+      },
+      {
+        "ticket_id": "T-1402",
+        "subject": "PDF report export times out for large date ranges",
+        "resolution_notes": "PDF rendering was done synchronously in the request thread. Moved large exports to an async job with an email notification when the file is ready.",
+        "cosine_similarity": 0.5046,
+        "applicability": "related",
+        "differences": []
+      },
+      {
+        "ticket_id": "T-1404",
+        "subject": "Exported numbers don't match dashboard totals",
+        "resolution_notes": "The export used a slightly different filter default (including cancelled orders) than the dashboard view. Aligned both to exclude cancelled orders by default and documented the distinction.",
+        "cosine_similarity": 0.4707,
+        "applicability": "related",
+        "differences": []
+      }
+    ]
+  },
+  {
+    "scenario": "export_job_never_finishes",
+    "input": {
+      "subject": "Export job never finishes",
+      "description": "The export job keeps running indefinitely and never completes. No file is produced.",
+      "category": "export"
+    },
+    "assessment": "related_cases",
+    "matches": [
+      {
+        "ticket_id": "T-1402",
+        "subject": "PDF report export times out for large date ranges",
+        "resolution_notes": "PDF rendering was done synchronously in the request thread. Moved large exports to an async job with an email notification when the file is ready.",
+        "cosine_similarity": 0.5158,
+        "applicability": "related",
+        "differences": []
+      },
+      {
+        "ticket_id": "T-1401",
+        "subject": "CSV export missing last week of data",
+        "resolution_notes": "The export job's date range used the same UTC/local timezone gap as the sync issue in T-1104. Applied the same buffer fix to the export query.",
+        "cosine_similarity": 0.4233,
+        "applicability": "related",
+        "differences": []
+      },
+      {
+        "ticket_id": "T-1405",
+        "subject": "Export button greyed out for read-only users",
+        "resolution_notes": "This was expected behavior per the permission model, but the customer wasn't aware exports required editor-level access. Clarified the permission model and upgraded the specific user's role at the admin's request.",
+        "cosine_similarity": 0.3832,
+        "applicability": "related",
+        "differences": []
+      }
+    ]
+  }
+]

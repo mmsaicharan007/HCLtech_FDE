@@ -1,6 +1,6 @@
 # Supabase setup
 
-Database integration is implemented but requires a configured project for live validation. The original JSON backend remains the default.
+Live Supabase import and validation completed. Local `.env` now selects PostgreSQL; JSON remains available as a fallback. Two imports left counts at 40 tickets, 40 resolution attempts, and 40 synthetic feedback records. Database API checks passed. The 16-case evaluation achieved 15/16 matching assessments and 9/10 directly labeled cases in the top three; H8 is a known retrieval regression. See `database_evaluation_report.json`.
 
 1. Create a free project at https://supabase.com/dashboard and save its database password.
 2. Open **Connect**, choose the **Session pooler** PostgreSQL URI, and copy it. Use its actual hostname, username, and port.

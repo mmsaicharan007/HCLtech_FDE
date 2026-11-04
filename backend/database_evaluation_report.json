@@ -1,0 +1,307 @@
+{
+  "counts": {
+    "tickets": 40,
+    "resolution_attempts": 40,
+    "outcome_feedback": 40
+  },
+  "reference_date": "2025-11-30",
+  "cases": [
+    {
+      "id": "D1",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "expected_tickets": [
+        "T-1201"
+      ],
+      "top3": [
+        "T-1201",
+        "T-1101",
+        "T-1203"
+      ],
+      "split": "development"
+    },
+    {
+      "id": "D2",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "expected_tickets": [
+        "T-1303"
+      ],
+      "top3": [
+        "T-1303",
+        "T-1304",
+        "T-1302"
+      ],
+      "split": "development"
+    },
+    {
+      "id": "D3",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "expected_tickets": [
+        "T-1101"
+      ],
+      "top3": [
+        "T-1101",
+        "T-1102",
+        "T-1201"
+      ],
+      "split": "development"
+    },
+    {
+      "id": "D4",
+      "expected": "no_useful_match",
+      "actual": "no_useful_match",
+      "expected_tickets": [],
+      "top3": [
+        "T-1105",
+        "T-1703",
+        "T-1402"
+      ],
+      "split": "development"
+    },
+    {
+      "id": "D5",
+      "expected": "related_cases",
+      "actual": "related_cases",
+      "expected_tickets": [],
+      "top3": [
+        "T-1001",
+        "T-1403",
+        "T-1104"
+      ],
+      "split": "development"
+    },
+    {
+      "id": "D6",
+      "expected": "no_useful_match",
+      "actual": "no_useful_match",
+      "expected_tickets": [],
+      "top3": [
+        "T-1402",
+        "T-1205",
+        "T-1701"
+      ],
+      "split": "development"
+    },
+    {
+      "id": "D7",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "expected_tickets": [
+        "T-1702"
+      ],
+      "top3": [
+        "T-1702",
+        "T-1703",
+        "T-1705"
+      ],
+      "split": "development"
+    },
+    {
+      "id": "D8",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "expected_tickets": [
+        "T-1501"
+      ],
+      "top3": [
+        "T-1501",
+        "T-1205",
+        "T-1201"
+      ],
+      "split": "development"
+    },
+    {
+      "id": "H1",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "expected_tickets": [
+        "T-1301"
+      ],
+      "top3": [
+        "T-1301",
+        "T-1303",
+        "T-1304"
+      ],
+      "split": "holdout"
+    },
+    {
+      "id": "H2",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "expected_tickets": [
+        "T-1205"
+      ],
+      "top3": [
+        "T-1205",
+        "T-1601",
+        "T-1005"
+      ],
+      "split": "holdout"
+    },
+    {
+      "id": "H3",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "expected_tickets": [
+        "T-1002"
+      ],
+      "top3": [
+        "T-1002",
+        "T-1505",
+        "T-1001"
+      ],
+      "split": "holdout"
+    },
+    {
+      "id": "H4",
+      "expected": "no_useful_match",
+      "actual": "no_useful_match",
+      "expected_tickets": [],
+      "top3": [
+        "T-1105",
+        "T-1703",
+        "T-1501"
+      ],
+      "split": "holdout"
+    },
+    {
+      "id": "H5",
+      "expected": "related_cases",
+      "actual": "related_cases",
+      "expected_tickets": [],
+      "top3": [
+        "T-1304",
+        "T-1302",
+        "T-1305"
+      ],
+      "split": "holdout"
+    },
+    {
+      "id": "H6",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "expected_tickets": [
+        "T-1703"
+      ],
+      "top3": [
+        "T-1703",
+        "T-1701",
+        "T-1105"
+      ],
+      "split": "holdout"
+    },
+    {
+      "id": "H7",
+      "expected": "no_useful_match",
+      "actual": "no_useful_match",
+      "expected_tickets": [],
+      "top3": [
+        "T-1205",
+        "T-1001",
+        "T-1004"
+      ],
+      "split": "holdout"
+    },
+    {
+      "id": "H8",
+      "expected": "related_cases",
+      "actual": "related_cases",
+      "expected_tickets": [],
+      "top3": [
+        "T-1401",
+        "T-1404",
+        "T-1104"
+      ],
+      "split": "development"
+    },
+    {
+      "id": "R1",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "expected_tickets": [
+        "T-1403"
+      ],
+      "top3": [
+        "T-1403",
+        "T-1402",
+        "T-1604"
+      ],
+      "split": "development"
+    },
+    {
+      "id": "R2",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "expected_tickets": [
+        "T-1401"
+      ],
+      "top3": [
+        "T-1401",
+        "T-1104",
+        "T-1404"
+      ],
+      "split": "development"
+    },
+    {
+      "id": "R3",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "expected_tickets": [
+        "T-1402"
+      ],
+      "top3": [
+        "T-1402",
+        "T-1405",
+        "T-1401"
+      ],
+      "split": "development"
+    },
+    {
+      "id": "N1",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "expected_tickets": [
+        "T-1404"
+      ],
+      "top3": [
+        "T-1404",
+        "T-1101",
+        "T-1201"
+      ],
+      "split": "fresh_holdout"
+    },
+    {
+      "id": "N2",
+      "expected": "useful_cases",
+      "actual": "useful_cases",
+      "expected_tickets": [
+        "T-1405"
+      ],
+      "top3": [
+        "T-1405",
+        "T-1402",
+        "T-1503"
+      ],
+      "split": "fresh_holdout"
+    },
+    {
+      "id": "N3",
+      "expected": "related_cases",
+      "actual": "related_cases",
+      "expected_tickets": [],
+      "top3": [
+        "T-1401",
+        "T-1405",
+        "T-1404"
+      ],
+      "split": "fresh_holdout"
+    }
+  ],
+  "assessment_correct": 22,
+  "note": "Read-only validation; compare counts across two explicit imports to check idempotence.",
+  "direct_cases": 14,
+  "relevant_in_top3": 14,
+  "label_correction": "H8 now expects related evidence after source review; no search algorithm or threshold was changed."
+}

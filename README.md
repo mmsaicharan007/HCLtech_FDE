@@ -6,7 +6,13 @@
 
 ### Database integration
 
-The PostgreSQL adapter, schema, repeatable import, and read-only database evaluation script are prepared. Live Supabase validation is pending project configuration. Follow [database setup](backend/DATABASE.md), then run `.venv/Scripts/python.exe -m backend.validate_database`. Keep `SEARCH_BACKEND=json` until import succeeds; select `postgres` to activate database retrieval. PostgreSQL keyword ranking uses `ts_rank`, not BM25, so existing local evaluation results do not validate database ordering.
+**Evaluation correction:** source review found that H8 was incorrectly labeled a direct match: its export completed, while T-1403 describes a failed scheduled job. It now expects related evidence and belongs to development. Earlier metrics below are historical and include that label error. See [ranking review](backend/RANKING_REVIEW.md); no ranking improvement is claimed from correcting a label.
+
+Supabase is connected and the local configuration selects `SEARCH_BACKEND=postgres`. Two imports completed without duplication: 40 tickets, 40 resolution attempts, and 40 explicitly synthetic feedback records. Database API checks passed for sample searches, resolution lookup, missing tickets, invalid inputs, feedback modes, and history filtering. Synthetic feedback remains disabled by default; enable `USE_SYNTHETIC_FEEDBACK=1` to demonstrate it.
+
+The database evaluation matched 15/16 expected assessments and retrieved 9/10 directly labeled cases in the top three. H8 (export email missing) remains classified as related; its expected case T-1403 fell outside the database top three, whereas local hybrid ranked it third. PostgreSQL `ts_rank` differs from BM25, and this regression is an open ranking issue. Results are in `backend/database_evaluation_report.json`. The original network reset PostgreSQL connections; the phone hotspot allowed successful access.
+
+Follow [database setup](backend/DATABASE.md) for reproducible import and validation commands. Restart the API after changing `.env`. Use `SEARCH_BACKEND=json` for the local fallback.
 
 The implementation now includes JSON-backed BM25 and hybrid retrieval using `all-MiniLM-L6-v2` embeddings, cosine similarity, and reciprocal rank fusion. Hybrid mode is the validated default; set `$env:SEARCH_MODE = 'keyword'` in PowerShell for the baseline. Supabase persistence remains a subsequent milestone. Applicability now uses transparent heuristics with development-tuned thresholds.
 
