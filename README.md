@@ -12,7 +12,8 @@ HCLTech Support is the customer purchasing the solution. Its support agents are 
 - **Volume:** Start from approximately 150 incoming tickets per day. Future growth is expected, but its magnitude remains unspecified.
 - **Input:** Tickets usually include a product area and free-text description. Missing, incorrect, or multiple product areas must be handled gracefully.
 - **Similarity:** Compare issue descriptions, symptoms, product areas, and exact signals such as error codes. Similar symptoms do not establish the same root cause or guarantee that a fix applies.
-- **Resolution evidence:** A closed ticket is not necessarily successfully resolved. Prefer cases with a clear recorded resolution, and expose missing or uncertain evidence.
+- **Resolution feedback:** Every resolved ticket has explicit user feedback indicating whether the issue was actually fixed. Associate feedback with individual resolution attempts so failed suggestions are distinguishable from successful fixes. Prioritize confirmed successful resolutions; historical success does not guarantee applicability to a new ticket. Reopened tickets require reassessment.
+- **Synthetic feedback:** If the supplied dataset lacks outcome feedback, add explicitly labeled synthetic feedback for the prototype rather than treating resolution notes as confirmed success.
 - **Agent judgment:** Agents review the evidence and decide what action to take. The prototype does not automatically apply fixes or send customer replies.
 - **Access:** Results must respect the agent's access permissions and protect sensitive ticket information.
 - **Weak matches:** Returning no useful match is an acceptable outcome. The interface should make weak evidence clear.
@@ -29,11 +30,48 @@ HCLTech Support is the customer purchasing the solution. Its support agents are 
 
 ## Search and AI choices
 
-Keyword search provides a baseline. Semantic search is a candidate for finding similar issues expressed in different words; we will assess whether combining the two improves retrieval on the supplied data.
+We will implement hybrid retrieval with case-based ranking: combine keyword search and semantic search, then assess whether historical successful fixes are applicable. Keep keyword-only retrieval as an evaluation baseline.
+
+Embed meaningful problem descriptions with labeled context such as product area and integration. Store resolutions separately from the problem representation to avoid generic troubleshooting advice dominating similarity. Precompute historical embeddings and regenerate them only when relevant content changes.
+
+Use cosine similarity for semantic retrieval and rank fusion to combine keyword and semantic result lists, rather than adding their raw scores. Merge and deduplicate results into an initial candidate pool of roughly 50, then rank by relevance, exact signals, product/integration/version compatibility, confirmed success, and recency. Tune candidate counts and ranking settings through evaluation.
+
+Show the strongest 3–5 distinct cases with recorded resolutions, feedback evidence, source links or source records, and relevant differences. Distinguish no relevant case from a relevant case without a successful resolution.
 
 Regex can extract predictable signals such as error codes, HTTP statuses, and product versions. It is a supporting technique rather than the primary method for understanding similarity.
 
-Retrieval delivers the core requested functionality. An optional LLM layer could summarize retrieved cases and resolutions, forming a retrieval-augmented generation (RAG) workflow. Any generated summary must remain supported by source records, preserve important conditions, and avoid inventing missing resolutions. Search similarity scores must not be presented as the probability that a fix will work.
+Retrieval delivers the core requested functionality. Defer LLM summaries until retrieval is reliable and evaluation demonstrates a need. Any future summary must remain supported by source records, preserve important conditions, and avoid inventing missing resolutions. Search similarity scores must not be presented as the probability that a fix will work.
+
+## Finalized technology stack
+
+| Layer | Choice | Purpose |
+| --- | --- | --- |
+| Frontend | React, TypeScript, Vite | Internal agent interface |
+| Styling | Tailwind CSS | Ticket and result presentation |
+| Backend | Python, FastAPI | Extraction, retrieval, ranking, feedback APIs |
+| Database | Supabase PostgreSQL | Tickets, metadata, resolution attempts, and feedback |
+| Search | PostgreSQL full-text search and pgvector | Keyword and vector retrieval in one database |
+| Embeddings | Small Sentence Transformers model | Semantic representations; select model through evaluation |
+| Evaluation | Python scripts and curated cases | Compare keyword-only and hybrid retrieval |
+
+## Deployment plan
+
+Deploy the React frontend as a Render static site, FastAPI as a Render free web service, and the database on Supabase Free. Free hosting is a prototype target, subject to current service limits and measured database size and backend memory use.
+
+Render free web services can sleep after inactivity and have an ephemeral filesystem. Persist tickets and feedback in PostgreSQL and keep a local demo fallback. Validate embedding model memory use and startup latency before finalizing deployment. Supabase Free database capacity must be checked against ticket text, embeddings, and index sizes before claiming that a full year of production history fits.
+
+Hosting references: [Render free services](https://render.com/docs/free) and [Supabase pricing](https://supabase.com/pricing).
+
+## Implementation milestones
+
+1. Inspect the starter dataset and utility code; verify fields, dates, resolution records, and feedback availability.
+2. Implement ingestion, database schema, structured signal extraction, and a keyword-search baseline.
+3. Add embeddings, hybrid retrieval, candidate fusion, and transparent applicability ranking.
+4. Build the agent interface: incoming ticket, suggested cases, resolution evidence, and feedback.
+5. Evaluate paraphrases, exact error matches, similar symptoms with different causes, incorrect metadata, duplicates, and no-match cases. Measure candidate retrieval separately from final ranking, plus response time.
+6. Deploy, verify persistence and resource limits, and prepare a local demonstration fallback.
+
+The first end-to-end milestone is: open an example ticket, retrieve useful historical cases, inspect confirmed fixes, and correctly handle the supplied unusual ticket with no strong match.
 
 ## Important edge cases
 
@@ -50,7 +88,7 @@ Retrieval delivers the core requested functionality. An optional LLM layer could
 
 The prototype focuses on discovering historical cases and making their resolutions reviewable. Automatic replies, automatic fixes, incident detection, and attachment interpretation are potential future extensions.
 
-Before finalizing implementation, inspect the starter kit and dataset, establish a small evaluation set, and define response-time expectations, refresh frequency, growth scenarios, and the source system's access rules. Storage and indexing choices should follow those findings.
+The architecture above is agreed. Remaining decisions include embedding model selection, ranking settings and no-match criteria, response-time expectations, refresh frequency, growth scenarios, and the source system's access rules. Validate these against the supplied data and deployment constraints. Define the reference date for the 12-month window explicitly so static synthetic data is not silently excluded by the live calendar.
 
 Business success means less repeated investigation and more appropriate, consistent responses. Prototype evaluation will focus on retrieval usefulness, resolution evidence, handling of weak matches, and response time; business impact requires validation with agents.
 
